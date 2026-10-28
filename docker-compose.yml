@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: imovies-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: imovies
+    volumes:
+      - imovies_mongo_data:/data/db
+
+  imovies-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: imovies-app
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      MONGODB_URI: mongodb://mongodb:27017/imovies
+      JWT_SECRET: production_super_secret_jwt_key_imovies_2026
+      JWT_EXPIRES_IN: 7d
+      CLIENT_URL: http://localhost:5001
+      SEAT_HOLD_DURATION_MINUTES: 10
+      USE_MEMORY_DB_FALLBACK: "false"
+    depends_on:
+      - mongodb
+
+volumes:
+  imovies_mongo_data:

@@ -1,0 +1,18 @@
+{
+  "name": "imovies",
+  "version": "1.0.0",
+  "description": "IMovies — Cinema Ticket Booking and Management System (MERN)",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "seed": "npm run seed --prefix server",
+    "build:client": "npm run build --prefix client",
+    "test": "npm test --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

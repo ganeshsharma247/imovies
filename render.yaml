@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: imovies-cinema-platform
+    env: node
+    plan: free
+    buildCommand: npm run install:all && npm run build:client
+    startCommand: node server/src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: USE_MEMORY_DB_FALLBACK
+        value: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: SEAT_HOLD_DURATION_MINUTES
+        value: 10
