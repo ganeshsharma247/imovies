@@ -381,6 +381,20 @@ async function getAllBookings(req, res, next) {
   }
 }
 
+/**
+ * Re-seed database with default catalog data
+ * POST /api/v1/admin/seed
+ */
+async function triggerDatabaseSeed(req, res, next) {
+  try {
+    const { seedDatabase } = require('../../seed/seeder');
+    const result = await seedDatabase({ log: false });
+    res.status(200).json(new ApiResponse(200, result, 'Database re-seeded successfully'));
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAdminStats,
   createMovie,
@@ -391,4 +405,5 @@ module.exports = {
   createShow,
   deleteShow,
   getAllBookings,
+  triggerDatabaseSeed,
 };

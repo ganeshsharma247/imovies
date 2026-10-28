@@ -16,8 +16,8 @@ export function SocketProvider({ children }) {
         : 'http://localhost:5001');
 
     const socketInstance = io(socketUrl, {
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
     });
 
@@ -27,6 +27,10 @@ export function SocketProvider({ children }) {
 
     socketInstance.on('disconnect', () => {
       setConnected(false);
+    });
+
+    socketInstance.on('connect_error', (err) => {
+      console.warn('[Socket.IO] Connection notice:', err.message);
     });
 
     setSocket(socketInstance);

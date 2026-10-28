@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import apiClient from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
-import { Clock, ShieldAlert, ArrowRight, Film, RefreshCw, AlertCircle, Check } from 'lucide-react';
+import { Clock, ShieldAlert, ArrowRight, Clapperboard, RefreshCw, AlertCircle, Check, Sparkles, MapPin } from 'lucide-react';
 
 export default function SeatSelectionPage() {
   const { id: showId } = useParams();
@@ -125,7 +125,7 @@ export default function SeatSelectionPage() {
         return prev.filter((id) => id !== seat.seatId);
       } else {
         if (prev.length >= 8) {
-          setError('You can select a maximum of 8 seats per booking.');
+          setError('You can select a maximum of 8 seats per booking transaction.');
           return prev;
         }
         return [...prev, seat.seatId];
@@ -140,7 +140,7 @@ export default function SeatSelectionPage() {
     return acc;
   }, {});
 
-  // Calculate pricing
+  // Pricing calculations
   const selectedSeatObjects = seats.filter((s) => selectedSeatIds.includes(s.seatId));
   const subTotal = selectedSeatObjects.reduce((sum, s) => sum + s.price, 0);
 
@@ -152,7 +152,7 @@ export default function SeatSelectionPage() {
     }
 
     if (selectedSeatIds.length === 0) {
-      setError('Please select at least one seat to proceed.');
+      setError('Please select at least one seat from the auditorium map.');
       return;
     }
 
@@ -176,7 +176,7 @@ export default function SeatSelectionPage() {
         },
       });
     } catch (err) {
-      setError(err.message || 'One or more selected seats are no longer available. Please try another selection.');
+      setError(err.message || 'One or more selected seats were just taken. Please make another selection.');
       loadShowSeats();
     } finally {
       setSubmitting(false);
@@ -186,61 +186,71 @@ export default function SeatSelectionPage() {
   if (loading) {
     return (
       <div className="py-24 text-center space-y-4">
-        <RefreshCw className="w-8 h-8 animate-spin text-cinema-accent mx-auto" />
-        <p className="text-sm text-slate-400">Loading interactive seat layout...</p>
+        <RefreshCw className="w-10 h-10 animate-spin text-cyan-400 mx-auto" />
+        <p className="text-sm font-semibold text-slate-400">Loading interactive auditorium seat layout...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-20">
-      {/* Show Breadcrumb and Summary Header */}
-      <div className="rounded-xl bg-cinema-card border border-cinema-border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-xs text-cinema-accent font-bold uppercase tracking-wider">
-            Seat Selection
-          </span>
-          <h1 className="text-xl font-extrabold text-white">
+    <div className="space-y-8 pb-32">
+      {/* Show Header & Hold Timer Bar */}
+      <div className="rounded-3xl bg-cinema-card border border-cinema-border p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-cyan-400 bg-cyan-950/40 px-2.5 py-0.5 rounded-md border border-cyan-800/40">
+              {show?.screenName || 'Main Screen'}
+            </span>
+            <span className="text-xs text-slate-400 font-medium">
+              {show?.startTime ? new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+            </span>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-black text-white">
             {show?.movie?.title}
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {show?.theatre?.name} &bull; {show?.screenName} &bull; {show?.startTime ? new Date(show.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+
+          <p className="text-xs text-slate-400 flex items-center space-x-1.5">
+            <MapPin className="w-3.5 h-3.5 text-violet-400" />
+            <span>{show?.theatre?.name} &bull; {show?.theatre?.city}</span>
           </p>
         </div>
 
         {timeLeft && (
-          <div className="flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-lg text-amber-400 text-xs font-bold">
-            <Clock className="w-4 h-4 animate-pulse" />
-            <span>Hold Timer: {timeLeft}</span>
+          <div className="flex items-center space-x-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 px-4 py-2 rounded-2xl text-amber-300 text-xs font-black shadow-md">
+            <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span>Hold Active: {timeLeft}</span>
           </div>
         )}
       </div>
 
       {error && (
-        <div className="p-4 rounded-lg bg-red-950/30 border border-red-900/40 text-red-300 text-xs flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-          <span>{error}</span>
+        <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-900/50 text-rose-300 text-xs flex items-center space-x-2.5 shadow-md">
+          <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
-      {/* Screen Curved Banner */}
-      <div className="relative max-w-2xl mx-auto pt-6 text-center">
-        <div className="h-2 w-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-full shadow-[0_0_20px_rgba(56,189,248,0.7)]" />
-        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-2 block">
-          All Eyes This Way &bull; Cinema Screen
-        </span>
+      {/* Curved Screen Banner */}
+      <div className="relative max-w-2xl mx-auto pt-6 text-center space-y-3">
+        <div className="curved-screen w-full mx-auto" />
+        <div className="flex items-center justify-center space-x-2 text-[10px] font-black uppercase tracking-widest text-cyan-400/80">
+          <Sparkles className="w-3 h-3 text-cyan-400" />
+          <span>PROJECTION SCREEN</span>
+          <Sparkles className="w-3 h-3 text-cyan-400" />
+        </div>
       </div>
 
-      {/* Seat Layout Map */}
-      <div className="max-w-3xl mx-auto p-6 sm:p-10 rounded-2xl bg-cinema-card border border-cinema-border overflow-x-auto">
-        <div className="space-y-3 min-w-[500px]">
+      {/* Interactive Seat Map */}
+      <div className="max-w-3xl mx-auto p-6 sm:p-10 rounded-3xl bg-cinema-card/90 border border-cinema-border overflow-x-auto shadow-2xl">
+        <div className="space-y-3 min-w-[520px]">
           {Object.entries(rowsMap).map(([rowLabel, rowSeats]) => (
-            <div key={rowLabel} className="flex items-center justify-center space-x-2 sm:space-x-3">
-              <span className="w-6 text-xs font-bold text-slate-500 text-center">
+            <div key={rowLabel} className="flex items-center justify-center space-x-3">
+              <span className="w-6 text-xs font-black text-slate-500 text-center">
                 {rowLabel}
               </span>
 
-              <div className="flex items-center space-x-1.5 sm:space-x-2">
+              <div className="flex items-center space-x-2 sm:space-x-2.5">
                 {rowSeats.map((seat) => {
                   const isSelected = selectedSeatIds.includes(seat.seatId);
                   const isBooked = seat.status === 'booked';
@@ -249,15 +259,15 @@ export default function SeatSelectionPage() {
                   let seatStyle = 'bg-slate-800 text-slate-300 hover:bg-slate-700 border-slate-700 cursor-pointer';
 
                   if (isBooked) {
-                    seatStyle = 'bg-slate-900 text-slate-600 border-slate-900 cursor-not-allowed opacity-40';
+                    seatStyle = 'bg-slate-900/60 text-slate-600 border-slate-900 cursor-not-allowed opacity-30';
                   } else if (isLocked) {
-                    seatStyle = 'bg-amber-500/20 text-amber-400 border-amber-500/40 cursor-not-allowed';
+                    seatStyle = 'bg-amber-500/20 text-amber-400 border-amber-500/40 cursor-not-allowed animate-pulse';
                   } else if (isSelected) {
-                    seatStyle = 'bg-cinema-accent text-white border-cinema-accent shadow-md shadow-red-950 font-bold scale-105';
+                    seatStyle = 'bg-gradient-to-t from-violet-600 to-cyan-500 text-white border-cyan-400 shadow-glow-cyan font-black scale-110 ring-2 ring-cyan-400/50';
                   } else if (seat.tier === 'platinum') {
-                    seatStyle = 'bg-cyan-950/40 text-cyan-300 border-cyan-800/60 hover:bg-cyan-900/60 cursor-pointer';
+                    seatStyle = 'bg-cyan-950/40 text-cyan-300 border-cyan-800/60 hover:bg-cyan-900/60 hover:border-cyan-500 cursor-pointer';
                   } else if (seat.tier === 'gold') {
-                    seatStyle = 'bg-amber-950/30 text-amber-300 border-amber-800/50 hover:bg-amber-900/50 cursor-pointer';
+                    seatStyle = 'bg-violet-950/40 text-violet-300 border-violet-800/50 hover:bg-violet-900/50 hover:border-violet-500 cursor-pointer';
                   }
 
                   return (
@@ -265,72 +275,103 @@ export default function SeatSelectionPage() {
                       key={seat.seatId}
                       disabled={isBooked || isLocked}
                       onClick={() => toggleSeat(seat)}
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-t-lg rounded-b-sm border text-[11px] font-semibold transition-all duration-200 flex items-center justify-center ${seatStyle}`}
-                      title={`${seat.seatId} (${seat.tier.toUpperCase()}) - $${seat.price}`}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-t-xl rounded-b-sm border text-[11px] font-bold transition-all duration-150 flex items-center justify-center ${seatStyle}`}
+                      title={`${seat.seatId} • ${seat.tier.toUpperCase()} • $${seat.price}`}
                     >
-                      {isSelected ? <Check className="w-3.5 h-3.5" /> : seat.number}
+                      {seat.number}
                     </button>
                   );
                 })}
               </div>
 
-              <span className="w-6 text-xs font-bold text-slate-500 text-center">
+              <span className="w-6 text-xs font-black text-slate-500 text-center">
                 {rowLabel}
               </span>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Legend */}
-        <div className="flex flex-wrap items-center justify-center gap-6 pt-10 border-t border-slate-800/80 mt-8 text-xs text-slate-400">
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-4 rounded bg-slate-800 border border-slate-700" />
-            <span>Available</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-4 rounded bg-cinema-accent border border-cinema-accent" />
-            <span>Selected</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-4 rounded bg-amber-500/30 border border-amber-500/50" />
-            <span>Held (10m TTL)</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-4 rounded bg-slate-900 border border-slate-900 opacity-50" />
-            <span>Booked</span>
-          </div>
+      {/* Comprehensive Seat Legend */}
+      <div className="max-w-2xl mx-auto p-4 rounded-2xl bg-cinema-card/60 border border-cinema-border/70 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs">
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 rounded-t-md rounded-b-xs bg-slate-800 border border-slate-700" />
+          <span className="text-slate-400">Available</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 rounded-t-md rounded-b-xs bg-gradient-to-t from-violet-600 to-cyan-500 border border-cyan-400 shadow-sm" />
+          <span className="text-cyan-300 font-bold">Selected</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 rounded-t-md rounded-b-xs bg-amber-500/20 border border-amber-500/50" />
+          <span className="text-amber-400 font-medium">Held (10m)</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 rounded-t-md rounded-b-xs bg-slate-900 border border-slate-900 opacity-40" />
+          <span className="text-slate-600">Reserved</span>
+        </div>
+        <div className="hidden sm:block text-slate-600">|</div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3.5 h-3.5 rounded-full bg-violet-500/30 border border-violet-500" />
+          <span className="text-violet-300 font-medium">Gold (${show?.tierPricing?.gold || 18})</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3.5 h-3.5 rounded-full bg-cyan-500/30 border border-cyan-400" />
+          <span className="text-cyan-300 font-medium">VIP Platinum (${show?.tierPricing?.platinum || 25})</span>
         </div>
       </div>
 
-      {/* Floating Checkout Drawer */}
-      <div className="sticky bottom-4 z-40 max-w-3xl mx-auto rounded-xl bg-cinema-card/95 backdrop-blur-md border border-cinema-border p-4 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <div className="text-xs text-slate-400">
-            Selected: <strong className="text-white">{selectedSeatIds.length} Seats</strong>
-            {selectedSeatIds.length > 0 && ` (${selectedSeatIds.join(', ')})`}
+      {/* Floating Bottom Sticky Action Bar */}
+      <div className="fixed bottom-0 inset-x-0 bg-cinema-darker/95 backdrop-blur-xl border-t border-cinema-border/90 p-4 sm:p-5 z-40 shadow-2xl">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-slate-400 font-semibold">Selected Seats:</span>
+              {selectedSeatIds.length === 0 ? (
+                <span className="text-xs text-slate-500 italic">None selected</span>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedSeatIds.map((id) => (
+                    <span
+                      key={id}
+                      className="px-2 py-0.5 rounded-md text-xs font-black bg-cyan-950/60 text-cyan-300 border border-cyan-800/50"
+                    >
+                      {id}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="text-xs text-slate-500">
+              Max 8 seats per transaction &bull; Free instant hold for 10 minutes
+            </div>
           </div>
-          <div className="text-xl font-extrabold text-white">
-            ${subTotal.toFixed(2)}
+
+          <div className="flex items-center space-x-4">
+            <div className="text-right">
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Subtotal</span>
+              <span className="text-2xl font-black text-white">${subTotal.toFixed(2)}</span>
+            </div>
+
+            <button
+              onClick={handleProceedToCheckout}
+              disabled={submitting || selectedSeatIds.length === 0}
+              className="px-8 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 disabled:opacity-40 disabled:pointer-events-none text-white text-sm font-black shadow-lg shadow-violet-950/80 hover:shadow-cyan-950/80 transition-all flex items-center space-x-2"
+            >
+              {submitting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Securing Hold...</span>
+                </>
+              ) : (
+                <>
+                  <span>Proceed to Payment</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-200" />
+                </>
+              )}
+            </button>
           </div>
         </div>
-
-        <button
-          onClick={handleProceedToCheckout}
-          disabled={selectedSeatIds.length === 0 || submitting}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-cinema-accent hover:bg-cinema-accentHover disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center space-x-2 shadow-lg shadow-red-950/50 transition"
-        >
-          {submitting ? (
-            <>
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Holding Seats...</span>
-            </>
-          ) : (
-            <>
-              <span>Hold & Proceed to Pay</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
       </div>
     </div>
   );

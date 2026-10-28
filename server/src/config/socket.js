@@ -6,7 +6,10 @@ let io = null;
 function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
-      origin: [env.CLIENT_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: (origin, callback) => {
+        // Dynamically allow requesting origin so Socket.IO handshake succeeds from any domain
+        callback(null, true);
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },

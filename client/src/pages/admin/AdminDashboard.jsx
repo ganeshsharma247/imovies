@@ -39,6 +39,21 @@ export default function AdminDashboard() {
   });
 
   const [formMsg, setFormMsg] = useState(null);
+  const [seeding, setSeeding] = useState(false);
+
+  const handleReSeed = async () => {
+    if (!window.confirm('Reset and re-seed sample movies, theatres, and shows?')) return;
+    setSeeding(true);
+    try {
+      await apiClient.post('/admin/seed');
+      await fetchAdminData();
+      alert('Demo catalog re-seeded successfully!');
+    } catch (err) {
+      alert(err.message || 'Failed to re-seed database');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const fetchAdminData = async () => {
     setLoading(true);
@@ -116,7 +131,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="py-24 text-center space-y-4">
-        <RefreshCw className="w-8 h-8 animate-spin text-cinema-accent mx-auto" />
+        <RefreshCw className="w-8 h-8 animate-spin text-cyan-400 mx-auto" />
         <p className="text-sm text-slate-400">Loading admin operations dashboard...</p>
       </div>
     );
@@ -136,10 +151,20 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleReSeed}
+            disabled={seeding}
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition border border-emerald-500/30 disabled:opacity-50"
+            title="Populate demo movies, theatres, and shows"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${seeding ? 'animate-spin' : ''}`} />
+            <span>{seeding ? 'Seeding...' : 'Seed Demo Data'}</span>
+          </button>
+
           <button
             onClick={() => setShowMovieModal(true)}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-cinema-accent hover:bg-cinema-accentHover text-white text-xs font-bold transition shadow-md shadow-red-950/40"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white text-xs font-bold transition shadow-md shadow-violet-950/40"
           >
             <Plus className="w-4 h-4" />
             <span>Add Movie</span>
@@ -176,7 +201,7 @@ export default function AdminDashboard() {
 
           <div className="p-5 rounded-2xl bg-cinema-card border border-cinema-border space-y-1">
             <span className="text-xs text-slate-400 flex items-center space-x-1.5">
-              <Ticket className="w-4 h-4 text-cinema-accent" />
+              <Ticket className="w-4 h-4 text-cyan-400" />
               <span>Tickets Issued</span>
             </span>
             <div className="text-2xl font-black text-white">{stats.totalTicketsSold}</div>
@@ -204,15 +229,15 @@ export default function AdminDashboard() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-cinema-border space-x-6 text-sm font-semibold">
+      <div className="flex rounded-2xl bg-cinema-card p-1.5 border border-cinema-border max-w-md">
         {['overview', 'movies', 'bookings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-3 capitalize transition border-b-2 ${
+            className={`flex-1 py-2 px-4 rounded-xl text-xs font-black capitalize transition-all duration-200 ${
               activeTab === tab
-                ? 'border-cinema-accent text-white'
-                : 'border-transparent text-slate-400 hover:text-white'
+                ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-950/50'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             {tab}
@@ -283,7 +308,7 @@ export default function AdminDashboard() {
               <tbody className="divide-y divide-cinema-border/50 text-slate-300">
                 {bookings.map((b) => (
                   <tr key={b._id} className="hover:bg-slate-800/30">
-                    <td className="p-3.5 font-mono font-bold text-cinema-accent">{b.bookingReference}</td>
+                    <td className="p-3.5 font-mono font-bold text-cyan-300">{b.bookingReference}</td>
                     <td className="p-3.5">{b.user?.name || b.user?.email || 'Customer'}</td>
                     <td className="p-3.5 font-medium text-white">{b.movie?.title}</td>
                     <td className="p-3.5 font-mono">{b.seats?.map((s) => s.seatId).join(', ')}</td>
@@ -410,7 +435,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-cinema-accent text-white font-bold text-xs rounded-lg"
+                  className="px-4 py-1.5 bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl shadow-md"
                 >
                   Save Movie
                 </button>
@@ -545,7 +570,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-cinema-accent text-white font-bold text-xs rounded-lg"
+                  className="px-4 py-1.5 bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl shadow-md"
                 >
                   Schedule Show
                 </button>

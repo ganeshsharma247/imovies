@@ -18,3 +18,7 @@ services:
         value: 7d
       - key: SEAT_HOLD_DURATION_MINUTES
         value: 10
+      - key: CLIENT_URL
+        value: https://imovies-cinema-platform.onrender.com
+      - key: AUTO_SEED_IF_EMPTY
+        value: true

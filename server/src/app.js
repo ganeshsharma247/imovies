@@ -18,7 +18,10 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: [env.CLIENT_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: (origin, callback) => {
+      // Dynamically reflect origin to support credentials from any valid client/preview deployment
+      callback(null, true);
+    },
     credentials: true,
   })
 );

@@ -14,6 +14,22 @@ async function startServer() {
     // Connect to database (with fallback)
     await connectDB();
 
+    // Auto-seed initial catalog if database is empty
+    try {
+      const { Movie } = require('./models');
+      const { seedDatabase } = require('../seed/seeder');
+      const movieCount = await Movie.countDocuments();
+      if (movieCount === 0) {
+        console.log('🌱 Database is empty. Running initial database seed...');
+        await seedDatabase({ log: true });
+        console.log('✅ Initial database seed completed successfully.');
+      } else {
+        console.log(`🎬 Database contains ${movieCount} movies. Skipping initial seed.`);
+      }
+    } catch (seedErr) {
+      console.warn('⚠️ Auto-seed notice:', seedErr.message);
+    }
+
     httpServer.listen(env.PORT, () => {
       console.log(`===============================================`);
       console.log(`🎬 IMovies Server running in [${env.NODE_ENV}] mode`);

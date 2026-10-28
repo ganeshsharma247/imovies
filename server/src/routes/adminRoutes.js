@@ -9,6 +9,7 @@ const {
   createShow,
   deleteShow,
   getAllBookings,
+  triggerDatabaseSeed,
 } = require('../controllers/adminController');
 const { protect, restrictTo } = require('../middlewares/authMiddleware');
 
@@ -19,6 +20,7 @@ router.use(protect);
 router.use(restrictTo('admin'));
 
 router.get('/stats', getAdminStats);
+router.post('/seed', triggerDatabaseSeed);
 router.post('/movies', createMovie);
 router.put('/movies/:id', updateMovie);
 router.delete('/movies/:id', deleteMovie);

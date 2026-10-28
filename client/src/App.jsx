@@ -13,7 +13,7 @@ import BookingHistoryPage from './pages/user/BookingHistoryPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-import { Film, Shield, RefreshCw } from 'lucide-react';
+import { Film, Shield, RefreshCw, Sparkles, Clapperboard } from 'lucide-react';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -54,21 +54,30 @@ function AdminRoute({ children }) {
 
 function Layout({ children }) {
   return (
-    <div className="min-h-screen bg-cinema-dark text-slate-100 flex flex-col justify-between selection:bg-cinema-accent selection:text-white">
+    <div className="min-h-screen bg-cinema-darker text-slate-100 flex flex-col justify-between selection:bg-cinema-accent selection:text-white relative overflow-hidden">
+      {/* Subtle top ambient glow */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(139,92,246,0.12),rgba(6,182,212,0.05),transparent)] blur-3xl -z-10" />
+
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full relative z-10">
         {children}
       </main>
-      <footer className="border-t border-cinema-border/70 bg-cinema-card/50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <div className="flex items-center space-x-2">
-            <Film className="w-4 h-4 text-cinema-accent" />
-            <span className="font-bold text-slate-400">IMOVIES CINEMA PLATFORM</span>
-            <span>&bull;</span>
-            <span>Real-time Booking & Seat Hold Engine</span>
+
+      <footer className="border-t border-cinema-border/80 bg-cinema-dark/80 backdrop-blur-md py-8 relative z-10 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center">
+              <Clapperboard className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-extrabold tracking-wide text-white">IMOVIES</span>
+            <span className="text-slate-600">&bull;</span>
+            <span className="text-slate-400">Cinematic Experience & Live Booking Engine</span>
           </div>
-          <div>
-            &copy; {new Date().getFullYear()} IMovies Entertainment Systems. All rights reserved.
+          <div className="flex items-center space-x-4 text-slate-500 text-[11px]">
+            <span>100% Mock Safe Simulation</span>
+            <span>&bull;</span>
+            <span>&copy; {new Date().getFullYear()} IMovies Cinema Systems</span>
           </div>
         </div>
       </footer>

@@ -9,25 +9,49 @@
 
 body {
   margin: 0;
-  background-color: #0B0F19;
+  background-color: #060913;
   color: #F8FAFC;
+  overflow-x: hidden;
 }
 
-/* Custom Cinema Scrollbar */
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(16, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(27, 38, 64, 0.8);
+}
+
+.glass-dropdown {
+  background: rgba(10, 15, 29, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(40, 56, 94, 0.6);
+}
+
+/* Cinema Curved Projection Screen */
+.curved-screen {
+  height: 14px;
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.9) 0%, rgba(139, 92, 246, 0.4) 50%, transparent 100%);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.4);
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0F19;
+  background: #060913;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F293D;
+  background: #1B2640;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #8B5CF6;
 }
